@@ -18,6 +18,10 @@ class Test_NoAuthorisation(TestCase):
     self.assertEqual(response.status_code, 401)
     self.assertEqual(response['WWW-Authenticate'], "MAC")
     
+    response = c.get("/protected_resource")
+    self.assertEqual(response.status_code, 401)
+    self.assertEqual(response['WWW-Authenticate'], "MAC")
+    
 class Test_Authorisation(TestCase):
   urls = "auth_mac.tests.urls"
 

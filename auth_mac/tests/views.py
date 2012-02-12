@@ -5,3 +5,9 @@ def unattainable_resource(request):
   response = HttpResponse(status=401)
   response['WWW-Authenticate'] =  'MAC'
   return response
+
+def protected_resource(request):
+  "Requires Authorisation"
+  response = HttpResponse(status=401)
+  response['WWW-Authenticate'] =  'MAC'
+  return response

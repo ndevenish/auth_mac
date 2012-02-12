@@ -10,4 +10,5 @@ urlpatterns = patterns('auth_mac.tests.views',
     # url(r'^$',         'plain', name='plain'),
     # url(r'^optional$', 'optional_auth', name="Optional")
     url(r'unattainable_resource$', 'unattainable_resource'),
+    url(r'protected_resource$', 'protected_resource'),
 )

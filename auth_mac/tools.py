@@ -124,5 +124,18 @@ class Validator(object):
     # Split the string into key/value pairs
     results = reHeader.findall(self.authstring)
     # Verify we have all four required and none are repeated
-
-    print results
+    for key, value in results:
+      # Check they are all identified
+      if not key in ("mac", "nonce", "ext", "id", "ts"):
+        self.error = "Unidentified param"
+        return False
+      # Find all supplied keys with this keyname
+      allkeys = [x for x, y in results if x == key]
+      if len(allkeys) > 1:
+        self.error = "Duplicate key '{0}'".format(key)
+        return False
+    data = dict(results)
+    if not all(data.has_key(x) for x in ("mac", "nonce", "id", "ts")):
+      self.error = "Missing authorisation information"
+      return False
+    

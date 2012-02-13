@@ -38,26 +38,32 @@ class Test_Authorisation(TestCase):
     user.save()
     self.user = user
     # And, create a MAC access credentials for this user
-    self.credentials = Credentials(user=user, identifier="h480djs93hd8", key="489dks293j39")
+    # self.credentials = Credentials(user=user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials = rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
   
   @unittest.expectedFailure
   def test_credential_object(self):
     """Test the credentials object using the IETF Draft values.
     See: http://tools.ietf.org/html/draft-ietf-oauth-v2-http-mac-01 """
-    
-    rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
-    ms = Signature(self.credentials)
-    ms.sign_request("/resource/1?b=1&a=2", timestamp="1336363200", nonce="dj83hs9s")
+        
+    ms = Signature(self.rfc_credentials, host="example.com", port=80, method="GET")
+    ms.sign_request(uri="/resource/1?b=1&a=2", timestamp="1336363200", nonce="dj83hs9s")
     # Validate that we calculated the base string correctly
     example_bs = "1336363200\ndj83hs9s\nGET\n/resource/1?b=1&a=2\nexample.com\n80\n\n"
-    print ms.get_header()
     self.assertEqual(ms.base_string, example_bs)
     self.assertEqual(ms.signature, "bhCQXTVyfj5cmA9uKkPFx1zeOXM=")
 
+  def test_possible_erroneous_credentials(self):
+    "Test that we don't stray from our self-calculated output"
+    # Same as above test, but with a different signature
+    ms = Signature(self.rfc_credentials, host="example.com", port=80, method="GET")
+    ms.sign_request(uri="/resource/1?b=1&a=2", timestamp="1336363200", nonce="dj83hs9s")
+    example_bs = "1336363200\ndj83hs9s\nGET\n/resource/1?b=1&a=2\nexample.com\n80\n\n"
+    self.assertEqual(ms.base_string, example_bs)
+    self.assertEqual(ms.signature, "6T3zZzy2Emppni6bzL7kdRxUWL4=")
 
   def test_access_credentials(self):
     pass
-
 
 
 class TestRequest(TestCase):

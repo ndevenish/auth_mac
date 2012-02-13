@@ -29,14 +29,13 @@ class Test_NoAuthorisation(TestCase):
 
 
 
-class Test_Authorisation(TestCase):
+class Test_Signatures(TestCase):
   urls = "auth_mac.tests.urls"
 
   def setUp(self):
-    # Create a user to authorise
-    user = User.objects.create_user("testuser", "test@test.com")
-    user.save()
-    self.user = user
+    # Create a user to authorise with
+    self.user = User.objects.create_user("testuser", "test@test.com")
+    self.user.save()
     # And, create a MAC access credentials for this user
     # self.credentials = Credentials(user=user, identifier="h480djs93hd8", key="489dks293j39")
     self.rfc_credentials = rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
@@ -61,9 +60,6 @@ class Test_Authorisation(TestCase):
     example_bs = "1336363200\ndj83hs9s\nGET\n/resource/1?b=1&a=2\nexample.com\n80\n\n"
     self.assertEqual(ms.base_string, example_bs)
     self.assertEqual(ms.signature, "6T3zZzy2Emppni6bzL7kdRxUWL4=")
-
-  def test_access_credentials(self):
-    pass
 
 
 class TestRequest(TestCase):

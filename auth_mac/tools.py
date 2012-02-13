@@ -4,7 +4,7 @@ import hmac, hashlib, base64
 from django.contrib.auth.models import User
 import re
 
-reHeader = re.compile(r"""(mac|nonce|id|ts|req)="([^"]+)""")
+reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
 
 def _build_authheader(method, data):
   datastr = ", ".join(['{0}="{1}"'.format(x, y) for x, y in data.iteritems()])

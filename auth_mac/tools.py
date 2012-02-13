@@ -6,14 +6,14 @@ def _build_authheader(method, data):
   datastr = ", ".join(['{0}="{1}"'.format(x, y) for x, y in data.iteritems()])
   return "{0} {1}".format(method, datastr)
 
+class SignatureError(Exception):
+    pass
+
 class Signature(object):
   "A class to ease the creation of MAC signatures"
   MAC = None
   data = {}
   base_string = None
-
-  class SignatureError(Exception):
-    pass
   
   def __init__(self, credentials, **kwargs):
     self.MAC = credentials
@@ -53,7 +53,6 @@ class Signature(object):
       "uri": "HTTP Request URI",
       "host": "Destination Host",
       "port": "Destination Port",
-      "ext": "Ext tag (default is \"\", you have deleted?",
     }
     # Check all of these
     for key, errorstring in required_values.iteritems():

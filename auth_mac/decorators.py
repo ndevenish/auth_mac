@@ -16,7 +16,7 @@ def require_credentials(f):
     # Build the validation object
     authstr = request.META["HTTP_AUTHORIZATION"]
     v = Validator(authstr)
-    if not v.is_valid():
+    if not v.validate():
       response = HttpResponse(status=401)
       if v.error:
         response['WWW-Authenticate'] =  'MAC error="{0}"'.format(v.error)

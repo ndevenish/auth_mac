@@ -116,8 +116,8 @@ class Validator(object):
   def __init__(self, Authorization):
     self.authstring = Authorization
   
-  def is_valid(self):
-    "Checks and splits the authorisation string"
+  def validate_header(self):
+    "Validates that the header string is well formed"
     if not self.authstring.startswith("MAC "):
       # We have not tried to authenticate with MAC credentials
       return False
@@ -139,4 +139,32 @@ class Validator(object):
     if not all(data.has_key(x) for x in ("mac", "nonce", "id", "ts")):
       self.error = "Missing authorisation information"
       return False
-    
+    self.data = data
+    return True
+
+  def validate_credentials(self):
+    "Validates that the credentials are valid"
+    return True
+  def validate_nonce(self):
+    "Validates that the nonce is not a repeat"
+    return True
+  
+  def validate_signature(self):
+    "Validates that the signature is good"
+    # Find the credentials for this ID
+    return True
+  
+  def validate(self):
+    "Validates that everything is well formed and signed correctly"
+    # Validate the forming of the signature, this will fill _data
+    if not self.validate_header():
+      return False
+    # Validate that this nonce is not out of date
+    if not self.validate_nonce():
+      return False
+    # Validate that the credentials are good and current
+    if not self.validate_credentials():
+      return False
+    # Now, validate the cryptographic signature..
+    if not self.validate_signature():
+      return False

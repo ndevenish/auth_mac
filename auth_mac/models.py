@@ -18,6 +18,13 @@ class Credentials(models.Model):
   def __unicode__(self):
     return u"{0}:{1}".format(self.identifier, self.key)
   
+  @property
+  def expired(self):
+    """Returns whether or not the credentials have expired"""
+    if self.expiry < datetime.datetime.now():
+      return True
+    return False
+  
 class Nonce(models.Model):
   """Keeps track of any NONCE combinations that we have used"""
   nonce = models.CharField("NONCE", max_length=16, null=True, blank=True)

@@ -104,6 +104,9 @@ class Signature(object):
             "ts": self.data["timestamp"],
             "nonce": self.data["nonce"],
             "mac": self.sign_request() }
+    # Include the optional ext field
+    if self.data["ext"]:
+      data["ext"] = self.data["ext"]
     return _build_authheader("MAC", data)
 
 class Validator(object):
@@ -121,5 +124,5 @@ class Validator(object):
     # Split the string into key/value pairs
     results = reHeader.findall(self.authstring)
     # Verify we have all four required and none are repeated
-    
+
     print results

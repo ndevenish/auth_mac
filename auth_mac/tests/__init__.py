@@ -34,7 +34,6 @@ class Test_Signatures(TestCase):
     self.user = User.objects.create_user("testuser", "test@test.com")
     self.user.save()
     # And, create a MAC access credentials for this user
-    # self.credentials = Credentials(user=user, identifier="h480djs93hd8", key="489dks293j39")
     self.rfc_credentials = rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
   
   @unittest.expectedFailure
@@ -68,4 +67,37 @@ class Test_Signatures(TestCase):
 
 class TestRequest(TestCase):
   urls = "auth_mac.tests.urls"
+
+  def setUp(self):
+    # Create a user to authorise with
+    self.user = User.objects.create_user("testuser", "test@test.com")
+    self.user.save()
+    # And, create a MAC access credentials for this user
+    self.rfc_credentials = rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
     
+  def test_workingcredentials(self):
+    "Tests that we can read a resource with working credentials"
+    c = Client()
+    ms = Signature(self.rfc_credentials, host="example.com", port=80, method="GET")
+    ms.update(uri="/protected_resource")
+    c.get("/protected_resource", HTTP_AUTHORIZATION=ms.get_header())
+  
+  def test_nonmac_credentials(self):
+    "Tests that sending a non-mac authentication fails"
+    c = Client()
+    ms = Signature(self.rfc_credentials, host="example.com", port=80, method="GET")
+    ms.update(uri="/protected_resource")
+    header = ms.get_header()
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION="Basic " + header[4:])
+    self.assertEqual(response.status_code, 401)
+    # Make sure we don't have an error string
+    self.assertEqual(response['WWW-Authenticate'], "MAC")
+
+  def test_refuse_repeats(self):
+    "Tests that repeating auth information fails auth"
+    c = Client()
+    validheader = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200", ext="fsf"'
+    for key in ["nonce", "mac", "id", "ts", "ext"]:
+      keystr = validheader + ', {0}="rextra"'.format(key)
+      response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
+      self.assertEqual(response.status_code, 401)

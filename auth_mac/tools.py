@@ -1,6 +1,10 @@
 
 import datetime
 import hmac, hashlib, base64
+from django.contrib.auth.models import User
+import re
+
+reHeader = re.compile(r"""(mac|nonce|id|ts|req)="([^"]+)""")
 
 def _build_authheader(method, data):
   datastr = ", ".join(['{0}="{1}"'.format(x, y) for x, y in data.iteritems()])
@@ -101,3 +105,21 @@ class Signature(object):
             "nonce": self.data["nonce"],
             "mac": self.sign_request() }
     return _build_authheader("MAC", data)
+
+class Validator(object):
+  """Validates the mac credentials passed in from an HTTP HEADER"""
+  error = None
+
+  def __init__(self, Authorization):
+    self.authstring = Authorization
+  
+  def is_valid(self):
+    "Checks and splits the authorisation string"
+    if not self.authstring.startswith("MAC "):
+      # We have not tried to authenticate with MAC credentials
+      return False
+    # Split the string into key/value pairs
+    results = reHeader.findall(self.authstring)
+    # Verify we have all four required and none are repeated
+    
+    print results

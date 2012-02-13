@@ -101,19 +101,16 @@ class TestRequest(TestCase):
       keystr = validheader + ', {0}="rextra"'.format(key)
       response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
       self.assertEqual(response.status_code, 401)
+      self.assertIn("Duplicate", response["WWW-Authenticate"])
   
   def test_incomplete_information(self):
     "Test that giving incomplete mac information fails"
     c = Client()
-    keystr = 'MAC mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200"'
-    response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
-    self.assertEqual(response.status_code, 401)
-    keystr = 'MAC nonce="dj83hs9s", id="h480djs93hd8", ts="1336363200"'
-    response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
-    self.assertEqual(response.status_code, 401)  
-    keystr = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", ts="1336363200"'
-    response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
-    self.assertEqual(response.status_code, 401)  
-    keystr = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8"'
-    response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
-    self.assertEqual(response.status_code, 401)  
+    keystrs = [ 'MAC mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200"',
+                'MAC nonce="dj83hs9s", id="h480djs93hd8", ts="1336363200"',
+                'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", ts="1336363200"',
+                'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8"']
+    for keystr in keystrs:
+      response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
+      self.assertEqual(response.status_code, 401)
+      self.assertIn("Missing", response["WWW-Authenticate"])

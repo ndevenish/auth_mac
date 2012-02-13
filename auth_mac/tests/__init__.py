@@ -1,8 +1,5 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
+This module tests the auth_mac package
 """
 
 from django.test import TestCase
@@ -60,12 +57,15 @@ class Test_Signatures(TestCase):
     example_bs = "1336363200\ndj83hs9s\nGET\n/resource/1?b=1&a=2\nexample.com\n80\n\n"
     self.assertEqual(ms.base_string, example_bs)
     self.assertEqual(ms.signature, "6T3zZzy2Emppni6bzL7kdRxUWL4=")
-
+  
+  def test_creating_authheader(self):
+    "Test the creation of the auth header"
+    ms = Signature(self.rfc_credentials, host="example.com", port=80, method="GET")
+    ms.update(uri="/resource/1?b=1&a=2", timestamp="1336363200", nonce="dj83hs9s")
+    expected_authheader = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200"'
+    header = ms.get_header()
+    self.assertEqual(expected_authheader, header)
 
 class TestRequest(TestCase):
   urls = "auth_mac.tests.urls"
-  def test_dumping(self):
-    c = Client()
-    # print c.get("/dump_request", HTTP_AUTHORIZATION=)
-    data = {"id": "h480djs93hd8","ts": "1336363200","nonce":"dj83hs9s","mac":"bhCQXTVyfj5cmA9uKkPFx1zeOXM="}
-    # print build_authheader("MAC", data)
+    

@@ -36,7 +36,14 @@ class Signature(object):
     self._add_data_item(from_dict, "ext", "")
     self._add_data_item(from_dict, "timestamp", None)
     self._add_data_item(from_dict, "nonce", None)
-    
+    # If we are changing, wipe out the signature and base string
+    self.base_string = None
+    self.signature = None
+  
+  def update(self, **kwargs):
+    "Update the parameters from a dictionary"
+    self.update_data_from_dictionary(kwargs)
+
   def _get_timestamp(self):
     timestamp = datetime.datetime.utcnow() - datetime.datetime(1970,1,1)
     return timestamp.days * 24 * 3600 + timestamp.seconds

@@ -2,7 +2,7 @@
 import datetime
 import hmac, hashlib, base64
 from django.contrib.auth.models import User
-from auth_mac.models import Credentials
+from auth_mac.models import Credentials, Nonce
 import re
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
@@ -166,7 +166,18 @@ class Validator(object):
   
   def validate_nonce(self):
     "Validates that the nonce is not a repeat"
-    return True
+    # Convert the timestamp to a datetime object
+    timestamp = datetime.datetime(1970,1,1) + \
+      datetime.timedelta(seconds=int(self.data["ts"]))
+    # Try and get a nonce object with these values
+    try:
+      Nonce.objects.get(nonce=self.data["nonce"], timestamp=timestamp, credentials__identifier=self.data["id"])
+      self.error = "Duplicate nonce"
+      return False
+    except Nonce.DoesNotExist:
+      return True
+    
+    return False
   
   def validate_signature(self):
     "Validates that the signature is good"

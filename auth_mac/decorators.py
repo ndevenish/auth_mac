@@ -25,6 +25,8 @@ def require_credentials(f):
       if v.errorBody:
         response.content = v.errorBody
       return response
+    # It validated, use the user
+    request.user = v.user
 
     return f(request, *args, **kwargs)
   return wrapper

@@ -11,9 +11,10 @@ def unattainable_resource(request):
 @require_credentials
 def protected_resource(request):
   "Requires Authorisation"
-  response = HttpResponse(status=200)
-  # response['WWW-Authenticate'] =  'MAC'
-  return response
+  if request.user.is_anonymous():
+    # Something went very wrong if this is the case
+    return HttpResponse(status=500)
+  return HttpResponse(request.user.username)
 
 
 def optional_resource(request):

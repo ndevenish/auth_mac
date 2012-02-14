@@ -163,6 +163,7 @@ class TestRequest(TestCase):
     c = Client()
     response = c.get("/protected_resource", HTTP_AUTHORIZATION=header, HTTP_HOST="example.com")
     self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.content, "testuser")
 
 class TestUsers(TestCase):
   urls = "auth_mac.tests.urls"

@@ -207,4 +207,6 @@ class Validator(object):
     # Now, validate the cryptographic signature..
     if not self.validate_signature():
       return False
+    # Everything worked! et our user property
+    self.user = self.credentials.user
     return True

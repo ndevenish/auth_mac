@@ -66,6 +66,7 @@ class Test_Signatures(TestCase):
     self.assertEqual(expected_authheader, header)
 
 class TestRequest(TestCase):
+  "Test the sending of requests and validation against credentials"
   urls = "auth_mac.tests.urls"
 
   def setUp(self):
@@ -162,3 +163,22 @@ class TestRequest(TestCase):
     c = Client()
     response = c.get("/protected_resource", HTTP_AUTHORIZATION=header, HTTP_HOST="example.com")
     self.assertEqual(response.status_code, 200)
+
+class TestUsers(TestCase):
+  urls = "auth_mac.tests.urls"
+
+  def setUp(self):
+    # Create a user to authorise with
+    self.user = User.objects.create_user("testuser", "test@test.com")
+    self.user.save()
+    # And, create a MAC access credentials for this user
+    self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials.save()
+  
+  def test_anonymousaccess(self):
+    "Test the access of an optionally anonymous resource"
+    c = Client()
+    response = c.get("/optional_resource")
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.content, "AnonymousUser")
+        

@@ -14,3 +14,11 @@ def protected_resource(request):
   response = HttpResponse(status=200)
   # response['WWW-Authenticate'] =  'MAC'
   return response
+
+
+def optional_resource(request):
+  "An optional access resource"
+  if request.user.is_anonymous():
+    return HttpResponse("AnonymousUser")
+  
+  return HttpResponse(request.user.username)

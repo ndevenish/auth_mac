@@ -118,8 +118,9 @@ class Validator(object):
   """Validates the mac credentials passed in from an HTTP HEADER"""
   error = None
 
-  def __init__(self, Authorization):
+  def __init__(self, Authorization, request):
     self.authstring = Authorization
+    self.request = request
   
   def validate_header(self):
     "Validates that the header string is well formed"
@@ -159,7 +160,7 @@ class Validator(object):
     if credentials.expired:
       self.error = "MAC credentials expired"
       return False
-    
+    self.credentials = credentials
     return True
   
   def validate_nonce(self):

@@ -157,9 +157,8 @@ class TestRequest(TestCase):
   
   def test_valid_signature(self):
     "Test using a valid credential with a valid signature"
-    validheader = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200"'
+    s = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
+    header = s.get_header()
     c = Client()
-    response = c.get("/protected_resource", HTTP_AUTHORIZATION=validheader, HTTP_HOST="example.com")
-    # print response["WWW-Authenticate"]
-    print response
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=header, HTTP_HOST="example.com")
     self.assertEqual(response.status_code, 200)

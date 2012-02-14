@@ -207,3 +207,4 @@ class Validator(object):
     # Now, validate the cryptographic signature..
     if not self.validate_signature():
       return False
+    return True

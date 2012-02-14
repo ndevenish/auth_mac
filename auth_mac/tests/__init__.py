@@ -235,3 +235,23 @@ class TestNonce(TestCase):
                     HTTP_HOST="example.com")
     self.assertEqual(response.status_code, 401)
     self.assertIn("NONCE".upper(), response["WWW-Authenticate"].upper())
+
+class TestTimestamps(TestCase):
+  "Tests the timestamp adjustment and verification facilities"
+  urls = "auth_mac.tests.urls"
+
+  def setUp(self):
+    # Create a user to authorise with
+    self.user = User.objects.create_user("testuser", "test@test.com")
+    self.user.save()
+    # And, create a MAC access credentials for this user
+    self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials.save()
+    self.signature = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
+    self.timestamp = datetime.datetime.utcnow()
+    now = self.timestamp-datetime.datetime(1970,1,1)
+    self.now = now.days * 24*3600 + now.seconds
+  
+  def test_offsetregistration(self):
+    "Test that using credentials fixes the associated clock offset"
+    

@@ -22,6 +22,8 @@ def require_credentials(f):
         response['WWW-Authenticate'] =  'MAC error="{0}"'.format(v.error)
       else:
         response['WWW-Authenticate'] =  'MAC'
+      if v.errorBody:
+        response.content = v.errorBody
       return response
 
     return f(request, *args, **kwargs)

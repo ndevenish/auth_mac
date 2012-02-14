@@ -117,6 +117,7 @@ class Signature(object):
 class Validator(object):
   """Validates the mac credentials passed in from an HTTP HEADER"""
   error = None
+  errorBody = None
 
   def __init__(self, Authorization, request):
     self.authstring = Authorization
@@ -186,7 +187,8 @@ class Validator(object):
     
     # Compare them
     if not signature == self.data["mac"]:
-      self.error = "Invalid Signature"
+      self.error = "Invalid Signature."
+      self.errorBody = "Base String: {0}".format(s.base_string)
       return False
     
     return True

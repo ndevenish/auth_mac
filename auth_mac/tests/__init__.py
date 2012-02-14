@@ -192,4 +192,33 @@ class TestUsers(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.content, "testuser")
 
+class TestNonce(TestCase):
+  "Tests the nonce-evasion procedures"
+  urls = "auth_mac.tests.urls"
 
+  def setUp(self):
+    # Create a user to authorise with
+    self.user = User.objects.create_user("testuser", "test@test.com")
+    self.user.save()
+    # And, create a MAC access credentials for this user
+    self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials.save()
+    self.signature = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
+  
+  def test_sequential(self):
+    "Test sending the same nonce and timestamp through"
+    timestamp = datetime.datetime.utcnow()-datetime.datetime(1970,1,1)
+    timestamp = timestamp.days * 24*3600 + timestamp.seconds
+
+    c = Client()
+    self.signature.update(nonce="A_NONCE", timestamp=timestamp)
+    response = c.get("/protected_resource", 
+                    HTTP_AUTHORIZATION=self.signature.get_header(), 
+                    HTTP_HOST="example.com")
+    
+    self.assertEqual(response.status_code, 200)
+    response = c.get("/protected_resource", 
+                    HTTP_AUTHORIZATION=self.signature.get_header(), 
+                    HTTP_HOST="example.com")
+    self.assertEqual(response.status_code, 401)
+    self.assertIn("NONCE".upper(), response["WWW-Authenticate"].upper())

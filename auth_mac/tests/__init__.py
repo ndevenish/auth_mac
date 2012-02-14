@@ -147,10 +147,19 @@ class TestRequest(TestCase):
     self.assertEqual(response.status_code, 401)
     self.assertIn("Host", response["WWW-Authenticate"])    
 
-  def test_valid_signature(self):
+  def test_invalid_signature(self):
     "Test using a valid credential with an invalid signature"
     validheader = 'MAC nonce="djd3hs9s", mac="INVALIDSIGNATURE=", id="h480djs93hd8", ts="1336363200"'
     c = Client()
     response = c.get("/protected_resource", HTTP_AUTHORIZATION=validheader, HTTP_HOST="example.com")
     self.assertEqual(response.status_code, 401)
-    self.assertIn("SIGNATURE".upper(), response["WWW-Authenticate"].upper())    
+    self.assertIn("SIGNATURE".upper(), response["WWW-Authenticate"].upper())
+  
+  def test_valid_signature(self):
+    "Test using a valid credential with a valid signature"
+    validheader = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200"'
+    c = Client()
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=validheader, HTTP_HOST="example.com")
+    # print response["WWW-Authenticate"]
+    print response
+    self.assertEqual(response.status_code, 200)

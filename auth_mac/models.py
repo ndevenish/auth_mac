@@ -30,3 +30,8 @@ class Nonce(models.Model):
   nonce = models.CharField("NONCE", max_length=16, null=True, blank=True)
   timestamp = models.DateTimeField("Timestamp", auto_now_add=True)
   credentials = models.ForeignKey(Credentials)
+
+  def __unicode__(self):
+    timestamp = self.timestamp - datetime.datetime(1970,1,1)
+    timestamp = timestamp.days * 24 * 3600 + timestamp.seconds
+    return u"[{0}/{1}/{2}]".format(self.nonce, timestamp, self.credentials.identifier)

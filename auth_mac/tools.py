@@ -87,6 +87,11 @@ class Signature(object):
     """Signs a request to a specified URI and returns the signature"""
     self.update_data_from_dictionary(kwargs)
     self.validate()
+    return calculate_signature()
+  
+  def calculate_signature(self):
+    "Calculates the signature given internal data"
+    
     # What order do we use for calculations?
     data_vars = ["timestamp", "nonce", "method", "uri", "host", "port", "ext"]
     data = [str(self.data[x]) for x in data_vars]
@@ -94,7 +99,6 @@ class Signature(object):
     # print "Signing with key '{0}'".format(self.MAC.key)
     hm = hmac.new(self.MAC.key, self.base_string, hashlib.sha1)
     self.signature = base64.b64encode(hm.digest())
-    # print self.signature
     return self.signature
   
   def get_header(self, **kwargs):

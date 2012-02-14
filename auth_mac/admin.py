@@ -3,7 +3,7 @@ from django.contrib import admin
 
 
 class CredentialsAdmin(admin.ModelAdmin):
-  list_display = ['user', 'expiry', 'identifier', 'key' ]
+  list_display = ['user', 'expiry', 'identifier', 'key', 'clock_offset' ]
   # date_hierarchy = 'start'
   ordering = ('user',)
   # form = TokenForm

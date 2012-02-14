@@ -14,6 +14,7 @@ class Credentials(models.Model):
   expiry = models.DateTimeField("Expires On", default=default_expiry_time)
   identifier = models.CharField("MAC Key Identifier", max_length=16, default=random_string)
   key = models.CharField("MAC Key", max_length=16, default=random_string)
+  clock_offset = models.IntegerField("Clock Offset", null=True, blank=True)
 
   def __unicode__(self):
     return u"{0}:{1}".format(self.identifier, self.key)

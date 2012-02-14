@@ -74,6 +74,7 @@ class TestRequest(TestCase):
     self.user.save()
     # And, create a MAC access credentials for this user
     self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials.save()
     
   def test_workingcredentials(self):
     "Tests that we can read a resource with working credentials"
@@ -130,7 +131,7 @@ class TestRequest(TestCase):
 
   def test_expired_credentials(self):
     "Test using credentials that have expired"
-    expired = Credentials(user=self.user, expiry=datetime.datetime.min, identifier="h480djs93hd8", key="489dks293j39")
+    expired = Credentials(user=self.user, expiry=datetime.datetime.min, identifier="hdjs93hd8", key="489dks2939")
     expired.save()
     s = Signature(expired, method="GET", port=80, host="example.com", uri="protected_resource")
     c = Client()

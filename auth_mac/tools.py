@@ -97,7 +97,7 @@ class Signature(object):
     data = [str(self.data[x]) for x in data_vars]
     self.base_string = "\n".join(data) + "\n"
     # print "Signing with key '{0}'".format(self.MAC.key)
-    hm = hmac.new(self.MAC.key, self.base_string, hashlib.sha1)
+    hm = hmac.new(str(self.MAC.key), self.base_string, hashlib.sha1)
     self.signature = base64.b64encode(hm.digest())
     return self.signature
   

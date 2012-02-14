@@ -221,7 +221,6 @@ class TestNonce(TestCase):
     self.assertEqual(response.status_code, 401)
     self.assertIn("NONCE".upper(), response["WWW-Authenticate"].upper())
 
-  @unittest.skip("Disabled")
   def test_duplicate(self):
     "Test sending the same nonce and timestamp through fails"
     c = Client()

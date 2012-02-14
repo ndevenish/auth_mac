@@ -173,10 +173,13 @@ class Validator(object):
       datetime.timedelta(seconds=int(self.data["ts"]))
     # Try and get a nonce object with these values
     try:
-      Nonce.objects.get(nonce=self.data["nonce"], timestamp=timestamp, credentials__identifier=self.data["id"])
+      Nonce.objects.get(nonce=self.data["nonce"], timestamp=timestamp, credentials=self.credentials)
       self.error = "Duplicate nonce"
       return False
     except Nonce.DoesNotExist:
+      # Create the nonce, then return true
+      nonce = Nonce(nonce=self.data["nonce"], timestamp=timestamp, credentials=self.credentials)
+      nonce.save()
       return True
     
     return False
@@ -211,11 +214,11 @@ class Validator(object):
     # Validate the forming of the signature, this will fill _data
     if not self.validate_header():
       return False
-    # Validate that this nonce is not out of date
-    if not self.validate_nonce():
-      return False
     # Validate that the credentials are good and current
     if not self.validate_credentials():
+      return False
+    # Validate that this nonce is not out of date
+    if not self.validate_nonce():
       return False
     # Now, validate the cryptographic signature..
     if not self.validate_signature():

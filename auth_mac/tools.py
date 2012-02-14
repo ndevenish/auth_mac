@@ -182,12 +182,13 @@ class Validator(object):
     s.update(timestamp=self.data["ts"], nonce=self.data["nonce"])
     s.update(uri=self.request.path)
 
+    signature = s.calculate_signature()
     
-    self.error = "Invalid Signature"
-    # Compare HTTP_HOST and SERVER_NAME
-    # Use HTTP_HOST
-
-    return False
+    # Compare them
+    if not signature == self.data["mac"]:
+      self.error = "Invalid Signature"
+      return False
+    
     return True
   
   def validate(self):

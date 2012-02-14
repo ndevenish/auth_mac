@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from auth_mac.models import Credentials, Nonce
 import re
 
+debug = False
+
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
 
 def _build_authheader(method, data):

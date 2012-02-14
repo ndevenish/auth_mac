@@ -2,6 +2,7 @@
 import datetime
 import hmac, hashlib, base64
 from django.contrib.auth.models import User
+from auth_mac.models import Credentials
 import re
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
@@ -144,7 +145,19 @@ class Validator(object):
 
   def validate_credentials(self):
     "Validates that the credentials are valid"
+    try:
+      credentials = Credentials.objects.get(identifier=self.data["id"])
+    except Credentials.DoesNotExist:
+      self.error = "Invalid MAC credentials"
+      return False
+    
+    # Check that it hasn't expired
+    if credentials.expired:
+      self.error = "MAC credentials expired"
+      return False
+    
     return True
+  
   def validate_nonce(self):
     "Validates that the nonce is not a repeat"
     return True

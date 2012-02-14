@@ -114,3 +114,27 @@ class TestRequest(TestCase):
       response = c.get("/protected_resource", HTTP_AUTHORIZATION=keystr)
       self.assertEqual(response.status_code, 401)
       self.assertIn("Missing", response["WWW-Authenticate"])
+
+  def test_invalid_credentials(self):
+    "Test using credentials that are invalid, but signed correctly"
+    c = Client()
+    class CredShell(object):
+      key = "NOTAVALIDKEY"
+      identifier = "NOTANIDENTIFIER"
+    bad = CredShell()
+    # validheader = 'MAC nonce="dj83hss9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200", ext="fsf"'
+    s = Signature(bad, method="GET", port=80, host="example.com", uri="protected_resource")
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=s.get_header())
+    self.assertEqual(response.status_code, 401)
+    self.assertIn("Invalid", response["WWW-Authenticate"])
+
+  def test_expired_credentials(self):
+    "Test using credentials that have expired"
+    expired = Credentials(user=self.user, expiry=datetime.datetime.min, identifier="h480djs93hd8", key="489dks293j39")
+    expired.save()
+    s = Signature(expired, method="GET", port=80, host="example.com", uri="protected_resource")
+    c = Client()
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=s.get_header())
+    self.assertEqual(response.status_code, 401)
+    self.assertIn("EXPIRED".upper(), response["WWW-Authenticate"].upper())
+

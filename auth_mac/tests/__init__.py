@@ -182,4 +182,14 @@ class TestUsers(TestCase):
     response = c.get("/optional_resource")
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.content, "AnonymousUser")
-        
+  
+  def test_authaccess(self):
+    "Test optional authorisation access with user credentials"
+    s = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/optional_resource")
+    header = s.get_header()
+    c = Client()
+    response = c.get("/optional_resource", HTTP_AUTHORIZATION=header, HTTP_HOST="example.com")
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.content, "testuser")
+
+

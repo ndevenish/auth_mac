@@ -31,6 +31,18 @@ def require_credentials(f):
     return f(request, *args, **kwargs)
   return wrapper
 
+def read_credentials(f):
+  @wraps(f)
+  def wrapper(request, *args, **kwargs):
+    """pull the credentials out of the request, and use them if valid"""
+    if request.META.has_key("HTTP_AUTHORIZATION"):
+      authstr = request.META["HTTP_AUTHORIZATION"]
+      v = Validator(authstr, request)
+      if v.validate():
+        request.user = v.user
+    # Now, call the wrapped function regardless
+    return f(request, *args, **kwargs)
+  return wrapper  
 
 # def extract(d, keys):
 #   "Extract a subset of a dictionary"

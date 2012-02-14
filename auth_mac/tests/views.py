@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 
-from auth_mac.decorators import require_credentials
+from auth_mac.decorators import require_credentials, read_credentials
 
 def unattainable_resource(request):
   "Always asks for authorisation."
@@ -16,7 +16,7 @@ def protected_resource(request):
     return HttpResponse(status=500)
   return HttpResponse(request.user.username)
 
-
+@read_credentials
 def optional_resource(request):
   "An optional access resource"
   if request.user.is_anonymous():

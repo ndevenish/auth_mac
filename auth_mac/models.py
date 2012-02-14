@@ -28,9 +28,14 @@ class Credentials(models.Model):
 class Nonce(models.Model):
   """Keeps track of any NONCE combinations that we have used"""
   nonce = models.CharField("NONCE", max_length=16, null=True, blank=True)
-  timestamp = models.DateTimeField("Timestamp", auto_now_add=True)
+  timestamp = models.DateTimeField("Timestamp", default=datetime.datetime.utcnow)
   credentials = models.ForeignKey(Credentials)
 
+  def save(self, *args, **kwargs):
+    "Reset the timestamp, then save"
+    self.timestamp = self.timestamp.replace(microsecond=0)
+    super(Nonce, self).save(*args, **kwargs)
+  
   def __unicode__(self):
     timestamp = self.timestamp - datetime.datetime(1970,1,1)
     timestamp = timestamp.days * 24 * 3600 + timestamp.seconds

@@ -9,6 +9,18 @@ debug = False
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
 
+def compare_string_fixedtime(string1,string2):
+  """A fixed-time string comparison function"""
+  # Ensure the strings are the same length
+  if len(string1) != len(string2):
+    return False
+  # Add up the XOR differences
+  testSum = sum(ord(x) ^ ord(y) for x, y in zip(string1, string2))
+  # if they were different....
+  if testSum:
+      return False
+  return True
+
 def _build_authheader(method, data):
   datastr = ", ".join(['{0}="{1}"'.format(x, y) for x, y in data.iteritems()])
   return "{0} {1}".format(method, datastr)
@@ -202,7 +214,7 @@ class Validator(object):
     signature = s.calculate_signature()
     
     # Compare them
-    if not signature == self.data["mac"]:
+    if not compare_string_fixedtime(signature, self.data["mac"]):
       self.error = "Invalid Signature. Base string in body."
       self.errorBody = s.base_string
       return False

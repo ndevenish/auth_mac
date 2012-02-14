@@ -139,3 +139,18 @@ class TestRequest(TestCase):
     self.assertEqual(response.status_code, 401)
     self.assertIn("EXPIRED".upper(), response["WWW-Authenticate"].upper())
 
+  def test_header_without_host(self):
+    "Tests that signature does not proceed without a valid host value"
+    validheader = 'MAC nonce="djd3hs9s", mac="INVALIDSIGNATURE=", id="h480djs93hd8", ts="1336363200"'
+    c = Client()
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=validheader)
+    self.assertEqual(response.status_code, 401)
+    self.assertIn("Host", response["WWW-Authenticate"])    
+
+  def test_valid_signature(self):
+    "Test using a valid credential with an invalid signature"
+    validheader = 'MAC nonce="djd3hs9s", mac="INVALIDSIGNATURE=", id="h480djs93hd8", ts="1336363200"'
+    c = Client()
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=validheader, HTTP_HOST="example.com")
+    self.assertEqual(response.status_code, 401)
+    self.assertIn("SIGNATURE".upper(), response["WWW-Authenticate"].upper())    

@@ -9,7 +9,7 @@ setup(
     author_email='n.devenish@gmail.com',
     packages=['auth_mac', 'auth_mac.tests'],
     license=open('LICENSE.txt').read(),
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
     url='https://github.com/ndevenish/auth_mac',
     keywords = ['django', 'authorization', 'MAC'],
     classifiers = [

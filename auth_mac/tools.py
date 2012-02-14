@@ -187,8 +187,8 @@ class Validator(object):
     
     # Compare them
     if not signature == self.data["mac"]:
-      self.error = "Invalid Signature."
-      self.errorBody = "Base String: {0}".format(s.base_string)
+      self.error = "Invalid Signature. Base string in body."
+      self.errorBody = s.base_string
       return False
     
     return True

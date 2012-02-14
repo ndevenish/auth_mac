@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(
-    name='auth_mac',
+    name='django-auth_mac',
     version='0.1',
     description="Basic Django implementation of the draft RFC ietf-oauth-v2-http-mac-01",
     author='Nicholas Devenish',

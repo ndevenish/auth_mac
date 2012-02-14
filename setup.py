@@ -24,6 +24,6 @@ setup(
       "Development Status :: 2 - Pre-Alpha",
       "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    install_requires=['django', 'south'],
+    install_requires=['django'],
     zip_safe=False,
 )

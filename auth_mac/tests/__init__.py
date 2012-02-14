@@ -5,7 +5,7 @@ This module tests the auth_mac package
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from auth_mac.models import Credentials
+from auth_mac.models import Credentials, Nonce
 import datetime
 import hmac, hashlib, base64
 import unittest
@@ -204,14 +204,28 @@ class TestNonce(TestCase):
     self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
     self.rfc_credentials.save()
     self.signature = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
+    self.timestamp = datetime.datetime.utcnow()
+    now = self.timestamp-datetime.datetime(1970,1,1)
+    self.now = now.days * 24*3600 + now.seconds
   
-  def test_sequential(self):
-    "Test sending the same nonce and timestamp through"
-    timestamp = datetime.datetime.utcnow()-datetime.datetime(1970,1,1)
-    timestamp = timestamp.days * 24*3600 + timestamp.seconds
 
+  def test_nonceexists(self):
+    "Test the failure of a pre-existing nonce"
+    nonce = Nonce(nonce="NONCE", timestamp=self.timestamp, credentials=self.rfc_credentials)
+    nonce.save()
+    self.signature.update(timestamp=self.now, nonce="NONCE")
     c = Client()
-    self.signature.update(nonce="A_NONCE", timestamp=timestamp)
+    response = c.get("/protected_resource", 
+                    HTTP_AUTHORIZATION=self.signature.get_header(), 
+                    HTTP_HOST="example.com")
+    self.assertEqual(response.status_code, 401)
+    self.assertIn("NONCE".upper(), response["WWW-Authenticate"].upper())
+
+  @unittest.skip("Disabled")
+  def test_duplicate(self):
+    "Test sending the same nonce and timestamp through fails"
+    c = Client()
+    self.signature.update(nonce="A_NONCE", timestamp=self.now)
     response = c.get("/protected_resource", 
                     HTTP_AUTHORIZATION=self.signature.get_header(), 
                     HTTP_HOST="example.com")

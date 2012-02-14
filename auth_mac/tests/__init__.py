@@ -34,7 +34,7 @@ class Test_Signatures(TestCase):
     self.user = User.objects.create_user("testuser", "test@test.com")
     self.user.save()
     # And, create a MAC access credentials for this user
-    self.rfc_credentials = rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
   
   @unittest.expectedFailure
   def test_credential_object(self):
@@ -73,7 +73,7 @@ class TestRequest(TestCase):
     self.user = User.objects.create_user("testuser", "test@test.com")
     self.user.save()
     # And, create a MAC access credentials for this user
-    self.rfc_credentials = rfc_creds = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
+    self.rfc_credentials = Credentials(user=self.user, identifier="h480djs93hd8", key="489dks293j39")
     
   def test_workingcredentials(self):
     "Tests that we can read a resource with working credentials"

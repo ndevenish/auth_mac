@@ -87,11 +87,11 @@ class Signature(object):
     """Signs a request to a specified URI and returns the signature"""
     self.update_data_from_dictionary(kwargs)
     self.validate()
-    return calculate_signature()
+    return self.calculate_signature()
   
   def calculate_signature(self):
     "Calculates the signature given internal data"
-    
+
     # What order do we use for calculations?
     data_vars = ["timestamp", "nonce", "method", "uri", "host", "port", "ext"]
     data = [str(self.data[x]) for x in data_vars]

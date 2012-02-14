@@ -169,7 +169,25 @@ class Validator(object):
   
   def validate_signature(self):
     "Validates that the signature is good"
-    # Find the credentials for this ID
+    s = Signature(self.credentials)
+
+    if not self.request.META.has_key("HTTP_HOST"):
+      # We can't calculate a signature without the host
+      self.error = "Missing Host header"
+      return False
+    
+    hostname = self.request.META["HTTP_HOST"]
+    port = self.request.META["SERVER_PORT"]
+    s.update(host=hostname, port=port)
+    s.update(timestamp=self.data["ts"], nonce=self.data["nonce"])
+    s.update(uri=self.request.path)
+
+    
+    self.error = "Invalid Signature"
+    # Compare HTTP_HOST and SERVER_NAME
+    # Use HTTP_HOST
+
+    return False
     return True
   
   def validate(self):

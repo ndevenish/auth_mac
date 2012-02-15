@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='django-auth_mac',
-    version='0.1',
+    version='0.1.1',
     description="Basic Django implementation of the draft RFC ietf-oauth-v2-http-mac-01",
     author='Nicholas Devenish',
     author_email='n.devenish@gmail.com',
@@ -24,6 +24,6 @@ setup(
       "Development Status :: 2 - Pre-Alpha",
       "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    install_requires=['django'],
+    install_requires=['Django >= 1.3'],
     zip_safe=False,
 )

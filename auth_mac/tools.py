@@ -11,7 +11,6 @@ try:
 except:
   timezone = None
 
-debug = False
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
 

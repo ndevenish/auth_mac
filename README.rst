@@ -9,7 +9,9 @@ MAC Authorisation Module for Django
 Overview
 --------
 
-This package implements the current draft of the OAuth-2-related MAC authorisation protocol. This is designed to allow cryptographically reliable requests to be made over a connection that is susceptible to interception. It is based on a shared "secret" which is used to calculate a cryptographic signature at both client and resource server to verify that the request was authentic.
+This package implements the current draft of the OAuth-2-related `MAC authorisation protocol`__. This is designed to allow cryptographically reliable requests to be made over a connection that is susceptible to interception. It is based on a shared "secret" which is used to calculate a cryptographic signature at both client and resource server to verify that the request was authentic.
+
+.. __: http://tools.ietf.org/html/draft-ietf-oauth-v2-http-mac-01
 
 This implementation very simply allows a django view to require that this authentication method be used, or to optionally use the authentication information to determine the user of the request.
 

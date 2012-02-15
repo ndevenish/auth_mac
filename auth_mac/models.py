@@ -2,10 +2,24 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 
+# Try to use the Django 1.4 timezone support
+try:
+  import django.utils.timezone as timezone
+  utc = timezone.utc
+except ImportError:
+  timezone = None
+  utc = None
+
 def default_expiry_time():
-  return datetime.datetime.now() + datetime.timedelta(days=1)
+  "The default credential expiry time"
+  return datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(days=1)
+
+def current_time():
+  "The current time in UTC"
+  return datetime.datetime.utcnow().replace(tzinfo=utc)
 
 def random_string():
+  "Generates a random credential string"
   return User.objects.make_random_password(16)
 
 class Credentials(models.Model):
@@ -29,7 +43,7 @@ class Credentials(models.Model):
 class Nonce(models.Model):
   """Keeps track of any NONCE combinations that we have used"""
   nonce = models.CharField("NONCE", max_length=16, null=True, blank=True)
-  timestamp = models.DateTimeField("Timestamp", default=datetime.datetime.utcnow)
+  timestamp = models.DateTimeField("Timestamp", default=current_time)
   credentials = models.ForeignKey(Credentials)
 
   def save(self, *args, **kwargs):

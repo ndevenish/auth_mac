@@ -1,22 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
-
-# Use the Django 1.4 timezone support, if it is there
-try:
-  import django.utils.timezone as timezone
-  utc = timezone.utc
-except ImportError:
-  timezone = None
-  utc = None
+from auth_mac.utils import to_utc, utcnow as current_utc_time
 
 def default_expiry_time():
   "The default credential expiry time"
-  return datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(days=1)
+  return current_utc_time() + datetime.timedelta(days=1)
 
-def current_utc_time():
-  "The current time in UTC"
-  return datetime.datetime.utcnow().replace(tzinfo=utc)
+# def current_utc_time():
+#   "The current time in UTC"
+#   # return to_utc(datetime.datetime.utcnow())
+#   return utcnow()
 
 def random_string():
   "Generates a random credential string"

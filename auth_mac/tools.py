@@ -4,13 +4,7 @@ import hmac, hashlib, base64
 from django.contrib.auth.models import User
 from auth_mac.models import Credentials, Nonce
 import re
-
-# Use the django 1.4 timezone supoprt if possible
-try:
-  import django.utils.timezone as timezone
-except:
-  timezone = None
-
+from auth_mac.utils import to_utc
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
 
@@ -189,8 +183,7 @@ class Validator(object):
     timestamp = datetime.datetime(1970,1,1) + \
       datetime.timedelta(seconds=int(self.data["ts"]))
     # Convert this timestamp to UTC if we are timezone-aware
-    if timezone:
-      timestamp = timestamp.replace(tzinfo=timezone.utc)
+    timestamp = to_utc(timestamp)
     # Try and get a nonce object with these values
     try:
       Nonce.objects.get(nonce=self.data["nonce"], timestamp=timestamp, credentials=self.credentials)

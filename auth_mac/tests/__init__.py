@@ -9,13 +9,7 @@ from auth_mac.models import Credentials, Nonce
 import datetime
 import hmac, hashlib, base64
 import unittest
-from auth_mac.tools import Signature
-
-# Use django 1.4 timezone support if available
-try:
-  import django.utils.timezone as timezone
-except:
-  timezone = None
+from auth_mac.tools import Signature, to_utc
 
 class Test_NoAuthorisation(TestCase):
   urls = "auth_mac.tests.urls"
@@ -138,10 +132,7 @@ class TestRequest(TestCase):
 
   def test_expired_credentials(self):
     "Test using credentials that have expired"
-    expired_date = datetime.datetime.utcnow() - datetime.timedelta(days=5)
-    if timezone:
-      expired_date = expired_date.replace(tzinfo=timezone.utc)
-    
+    expired_date = to_utc(datetime.datetime.utcnow()) - datetime.timedelta(days=5)    
     expired = Credentials(user=self.user, expiry=expired_date, identifier="hdjs93hd8", key="489dks2939")
     expired.save()
     s = Signature(expired, method="GET", port=80, host="example.com", uri="protected_resource")
@@ -216,9 +207,7 @@ class TestNonce(TestCase):
     self.signature = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
     self.timestamp = datetime.datetime.utcnow()
     now = self.timestamp-datetime.datetime(1970,1,1)
-    if timezone:
-      self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
-
+    self.timestamp = to_utc(self.timestamp)
     self.now = now.days * 24*3600 + now.seconds
   
 
@@ -263,6 +252,7 @@ class TestTimestamps(TestCase):
     self.signature = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
     self.timestamp = datetime.datetime.utcnow()
     now = self.timestamp-datetime.datetime(1970,1,1)
+    self.timestamp = to_utc(self.timestamp)
     self.now = now.days * 24*3600 + now.seconds
   
   def test_offsetregistration(self):

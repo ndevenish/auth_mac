@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 
-# Try to use the Django 1.4 timezone support
+# Use the Django 1.4 timezone support, if it is there
 try:
   import django.utils.timezone as timezone
   utc = timezone.utc
@@ -14,7 +14,7 @@ def default_expiry_time():
   "The default credential expiry time"
   return datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(days=1)
 
-def current_time():
+def current_utc_time():
   "The current time in UTC"
   return datetime.datetime.utcnow().replace(tzinfo=utc)
 
@@ -36,14 +36,14 @@ class Credentials(models.Model):
   @property
   def expired(self):
     """Returns whether or not the credentials have expired"""
-    if self.expiry < datetime.datetime.now():
+    if self.expiry < current_utc_time():
       return True
     return False
   
 class Nonce(models.Model):
   """Keeps track of any NONCE combinations that we have used"""
   nonce = models.CharField("NONCE", max_length=16, null=True, blank=True)
-  timestamp = models.DateTimeField("Timestamp", default=current_time)
+  timestamp = models.DateTimeField("Timestamp", default=current_utc_time)
   credentials = models.ForeignKey(Credentials)
 
   def save(self, *args, **kwargs):

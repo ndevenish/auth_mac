@@ -23,6 +23,7 @@ These are the features and features of the protocol that this package provides:
 * Uses existing Django User framework
 * Allows optional usage of credentials
 * Authentication errors are communicated back in the WWW-Authentication error parameter
+* Tested on Django 1.3 and 1.4
 
 Usage
 -----

@@ -1,6 +1,6 @@
 v0.1.1, 2012-02-15 -- 
   * Remove dependency on South - not needed at the moment
+  * Added timezone support when needed to work with Django 1.4
   * Made the dependency on Django 1.3+ explicit
-  
 
 v0.1.0, 2012-02-14 -- Initial release.

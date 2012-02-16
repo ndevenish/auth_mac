@@ -1,6 +1,7 @@
 
 import datetime
 from django.conf import settings
+import random
 
 # Use the django 1.4 timezone supoprt if possible
 try:
@@ -21,3 +22,7 @@ def to_utc(naive_datetime):
 def utcnow():
   "Returns a timezone-aware-appropriate UTC now"
   return to_utc(datetime.datetime.utcnow())
+
+def random_string(length=16):
+  random_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890_"
+  return "".join(random.sample(random_chars, length))

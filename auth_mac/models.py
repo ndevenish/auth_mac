@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
-from auth_mac.utils import to_utc, utcnow as current_utc_time
+from auth_mac.utils import random_string, to_utc, utcnow as current_utc_time
 
 def default_expiry_time():
   "The default credential expiry time"
@@ -11,10 +11,6 @@ def default_expiry_time():
 #   "The current time in UTC"
 #   # return to_utc(datetime.datetime.utcnow())
 #   return utcnow()
-
-def random_string():
-  "Generates a random credential string"
-  return User.objects.make_random_password(16)
 
 class Credentials(models.Model):
   "Keeps track of issued MAC credentials"

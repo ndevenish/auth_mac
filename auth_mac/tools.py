@@ -4,7 +4,8 @@ import hmac, hashlib, base64
 from django.contrib.auth.models import User
 from auth_mac.models import Credentials, Nonce
 import re
-from auth_mac.utils import to_utc
+from auth_mac.utils import to_utc, random_string
+import random
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
 
@@ -68,7 +69,7 @@ class Signature(object):
     return timestamp.days * 24 * 3600 + timestamp.seconds
   
   def _get_nonce(self):
-    return User.objects.make_random_password(8)
+    return random_string(8)
 
   def validate(self):
     "Validates that we have all the required information"

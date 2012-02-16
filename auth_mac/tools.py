@@ -208,6 +208,11 @@ class Validator(object):
     
     hostname = self.request.META["HTTP_HOST"]
     port = self.request.META["SERVER_PORT"]
+    
+    # Strip out the port from hostname, if this has been passed to us
+    if ":" in hostname:
+      hostname = hostname.split(":")[0]
+    # Form the rest of the signature
     s.update(host=hostname, port=port)
     s.update(timestamp=self.data["ts"], nonce=self.data["nonce"])
     s.update(uri=self.request.path)

@@ -64,6 +64,12 @@ class Test_Signatures(TestCase):
     expected_authheader = 'MAC nonce="dj83hs9s", mac="6T3zZzy2Emppni6bzL7kdRxUWL4=", id="h480djs93hd8", ts="1336363200"'
     header = ms.get_header()
     self.assertEqual(expected_authheader, header)
+  
+  def test_clearinstance(self):
+    "Tests that a fresh instance shares no data"
+    s1 = Signature(self.rfc_credentials, host="test")
+    s2 = Signature(self.rfc_credentials)
+    self.assertIsNot(s1.data, s2.data)
 
 class TestRequest(TestCase):
   "Test the sending of requests and validation against credentials"

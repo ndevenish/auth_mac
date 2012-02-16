@@ -30,11 +30,12 @@ class SignatureError(Exception):
 class Signature(object):
   "A class to ease the creation of MAC signatures"
   MAC = None
-  data = {}
+  data = None
   base_string = None
   
   def __init__(self, credentials, **kwargs):
     self.MAC = credentials
+    self.data = dict()
     self.update_data_from_dictionary(kwargs)
 
   def _add_data_item(self, from_dict, name, default=None):
@@ -216,7 +217,7 @@ class Validator(object):
     s.update(host=hostname, port=port)
     s.update(timestamp=self.data["ts"], nonce=self.data["nonce"])
     s.update(uri=self.request.path)
-
+    s.update(method=self.request.META["REQUEST_METHOD"])
     signature = s.calculate_signature()
     
     # Compare them

@@ -19,6 +19,7 @@ def require_credentials(f):
       return response
     # Build the validation object
     authstr = request.META["HTTP_AUTHORIZATION"]
+    authlog.debug("Recieved Auth Request: {0}".format(authstr))
     v = Validator(authstr, request)
     if not v.validate():
       response = HttpResponse(status=401)

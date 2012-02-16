@@ -165,6 +165,15 @@ class TestRequest(TestCase):
     response = c.get("/protected_resource", HTTP_AUTHORIZATION=header, HTTP_HOST="example.com")
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.content, "testuser")
+  
+  def test_port_in_host_header(self):
+    "Tests robustness against being passed the port in the host header"
+    s = Signature(self.rfc_credentials, method="GET", port=80, host="example.com", uri="/protected_resource")
+    header = s.get_header()
+    c = Client()
+    response = c.get("/protected_resource", HTTP_AUTHORIZATION=header, HTTP_HOST="example.com:80")
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.content, "testuser")  
 
 class TestUsers(TestCase):
   urls = "auth_mac.tests.urls"
@@ -257,4 +266,3 @@ class TestTimestamps(TestCase):
   
   def test_offsetregistration(self):
     "Test that using credentials fixes the associated clock offset"
-    

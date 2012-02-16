@@ -1,4 +1,4 @@
-
+import logging
 import datetime
 import hmac, hashlib, base64
 from django.contrib.auth.models import User
@@ -8,6 +8,7 @@ from auth_mac.utils import to_utc, random_string
 import random
 
 reHeader = re.compile(r"""(mac|nonce|id|ts|ext)="([^"]+)""")
+authlog = logging.getLogger("auth_mac.authorization")
 
 def compare_string_fixedtime(string1,string2):
   """A fixed-time string comparison function"""
